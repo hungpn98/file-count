@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListFileInFolderFragment extends Fragment implements FileAdapter.IFile {
+public class ListFileInFolderFragment extends Fragment implements ImageApdater.IIImage {
     private List<ItemFile> itemFiles;
     private RecyclerView rc;
     private ImageView ivShowImage;
@@ -61,8 +62,9 @@ public class ListFileInFolderFragment extends Fragment implements FileAdapter.IF
             itemFiles = getAllZip();
         }
         rc = view.findViewById(R.id.rv_list);
-        rc.setLayoutManager(new LinearLayoutManager(getActivity()));
-        rc.setAdapter(new FileAdapter(this));
+        rc.setLayoutManager(new GridLayoutManager(getActivity(),
+                3));
+        rc.setAdapter(new ImageApdater(this));
         return view;
     }
 
@@ -82,7 +84,8 @@ public class ListFileInFolderFragment extends Fragment implements FileAdapter.IF
         List<ItemFile> files = new ArrayList<>();
         Cursor c = getContext().getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                null, null, null, null
+                null, null, null,
+                MediaStore.Images.Media.DATE_ADDED + " DESC"
         );
         c.getColumnNames();
         String getDataPath = "_data";
@@ -215,9 +218,10 @@ public class ListFileInFolderFragment extends Fragment implements FileAdapter.IF
     }
 
     @Override
-    public int getSize() {
+    public int getCount() {
         return itemFiles.size();
     }
+
 
     @Override
     public ItemFile getData(int position) {
