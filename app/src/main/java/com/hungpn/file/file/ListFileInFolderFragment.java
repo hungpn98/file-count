@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListFileInFolderFragment extends Fragment implements ImageApdater.IIImage {
+public class ListFileInFolderFragment extends Fragment implements ImageApdater.IIImage , FileAdapter.IFile {
     private List<ItemFile> itemFiles;
     private RecyclerView rc;
     private ImageView ivShowImage;
@@ -36,35 +36,57 @@ public class ListFileInFolderFragment extends Fragment implements ImageApdater.I
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list_file, container, false);
         Bundle bundle = getArguments();
+        ivShowImage = view.findViewById(R.id.iv_show_image);
         String key = bundle.getString("PATHPLUS");
         if(key == ""){
             String path = Environment.getExternalStorageDirectory().getPath();
             itemFiles = readFile(path);
-            ivShowImage = view.findViewById(R.id.iv_show_image);
+            rc = view.findViewById(R.id.rv_list);
+            rc.setLayoutManager(new LinearLayoutManager(getActivity()));
+            rc.setAdapter(new FileAdapter(this));
         }
 
         if (key == "Download") {
             String path = Environment.getExternalStorageDirectory().getPath() + "/" + key;
             itemFiles = readFile(path);
-            ivShowImage = view.findViewById(R.id.iv_show_image);
+            rc = view.findViewById(R.id.rv_list);
+            rc.setLayoutManager(new LinearLayoutManager(getActivity()));
+            rc.setAdapter(new FileAdapter(this));
 
         } else if (key == "Image") {
             itemFiles = getAllImage();
+            rc = view.findViewById(R.id.rv_list);
+            rc.setLayoutManager(new GridLayoutManager(getActivity(),
+                    3));
+            rc.setAdapter(new ImageApdater(this));
         } else if (key == "Video") {
             itemFiles = getAllVideo();
+            rc = view.findViewById(R.id.rv_list);
+            rc.setLayoutManager(new GridLayoutManager(getActivity(),
+                    3));
+            rc.setAdapter(new ImageApdater(this));
         } else if (key == "Music") {
             itemFiles = getAllMusic();
+            rc = view.findViewById(R.id.rv_list);
+            rc.setLayoutManager(new LinearLayoutManager(getActivity()));
+            rc.setAdapter(new FileAdapter(this));
         } else if (key == "App") {
             itemFiles = getAllApp();
+            rc = view.findViewById(R.id.rv_list);
+            rc.setLayoutManager(new LinearLayoutManager(getActivity()));
+            rc.setAdapter(new FileAdapter(this));
         } else if (key == "Document") {
             itemFiles = getAllDocument();
+            rc = view.findViewById(R.id.rv_list);
+            rc.setLayoutManager(new LinearLayoutManager(getActivity()));
+            rc.setAdapter(new FileAdapter(this));
         }else if (key == "Zip") {
             itemFiles = getAllZip();
+            rc = view.findViewById(R.id.rv_list);
+            rc.setLayoutManager(new LinearLayoutManager(getActivity()));
+            rc.setAdapter(new FileAdapter(this));
         }
-        rc = view.findViewById(R.id.rv_list);
-        rc.setLayoutManager(new GridLayoutManager(getActivity(),
-                3));
-        rc.setAdapter(new ImageApdater(this));
+
         return view;
     }
 
@@ -111,13 +133,15 @@ public class ListFileInFolderFragment extends Fragment implements ImageApdater.I
         c.getColumnNames();
         String getDataPath = "_data";
         String getDataName = "_display_name";
+        String getDuration = "duration";
         int indexPath = c.getColumnIndex(getDataPath);
         int indexName = c.getColumnIndex(getDataName);
-
+        int indexDuration = c.getColumnIndex(getDuration);
         c.moveToFirst();
         while (!c.isAfterLast()) {
             String path = c.getString(indexPath);
             String name = c.getString(indexName);
+            Long duaration = c.getLong(indexDuration);
             files.add(new ItemFile(path, name));
             c.moveToNext();
         }
@@ -222,6 +246,11 @@ public class ListFileInFolderFragment extends Fragment implements ImageApdater.I
         return itemFiles.size();
     }
 
+
+    @Override
+    public int getSize() {
+        return itemFiles.size();
+    }
 
     @Override
     public ItemFile getData(int position) {

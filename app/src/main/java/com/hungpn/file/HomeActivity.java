@@ -18,7 +18,6 @@ public class HomeActivity extends AppCompatActivity {
 
     private MediaPrecenter precenter;
     private Bundle bundle;
-    ActionBarDrawerToggle toggle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

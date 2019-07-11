@@ -32,7 +32,7 @@ public class ImageApdater extends AdapterCommon<
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ImageViewHolder imageViewHolder, int position) {
+    public void onBindViewHolder(@NonNull ImageViewHolder imageViewHolder, final int position) {
         ItemFile item = inter.getData(position);
         GlideApp.with(imageViewHolder.itemView.getContext())
                 .load(new File(item.getPath()))
@@ -40,12 +40,13 @@ public class ImageApdater extends AdapterCommon<
                 .error(R.drawable.background_downloads)
                 .centerCrop()
                 .into(imageViewHolder.ivImage);
+        imageViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                inter.onClickItem(position);
+            }
+        });
     }
-
-
-
-
-
     public interface IIImage extends InterAdapter<ItemFile>{
         void onClickItem(int position);
     }
